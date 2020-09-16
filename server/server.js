@@ -1,21 +1,20 @@
+'use strict'; 
 const express = require('express');
+const logger = require('morgan'); 
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
 var app = express();
+
+app.use(logger('dev')); 
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '5mb', extended: true }));
 
+var sesion = require('./src/routes/sesion'); 
+//var estudiante = require('./src/routes/estudiante'); 
+//var asistencia = require('./src/routes/asistencia'); 
 
-app.post('/iniciosesion', (req, res) => {
-    console.log(req.body);
-    res.json('ok');
-});
-
-app.post('/nuevousuario', (req, res) => {
-    console.log(req.body);
-    res.json('ok');
-});
+app.use('/sesion',sesion); 
 
 app.listen(3000, (err) => {
     if (err) console.log('Ocurrio un error'), process.exit(1);
