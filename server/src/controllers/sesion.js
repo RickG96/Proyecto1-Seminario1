@@ -1,28 +1,79 @@
 const awsKeys = require('../conexion/conexion');
+
 const AWS = require('aws-sdk');
+//AWS.config.update(awsKeys.dinamo);
 const s3 = new AWS.S3(awsKeys.s3);
-var rekognition = new AWS.Rekognition(awsKeys.rekognition);
+const rekognition = new AWS.Rekognition(awsKeys.rekognition);
+const docClient = new AWS.DynamoDB.DocumentClient(); 
+
+const post_registro = (req, res) => {
+    //conexion aws
+    const AWS2 = require('aws-sdk');
+    AWS2.config.update(awsKeys.dinamo);
+    const docClient = new AWS2.DynamoDB.DocumentClient();
+    //fin de conexion 
+    let name = req.body.name;
+    let password = req.body.password;
+    let base64String = req.body.base64;
+    //Decodificar imagen 
+    if (base64String === "") {
+        AWS.config.update(awsKeys.dinamo);
+        const docClient = new AWS.DynamoDB.DocumentClient(); 
+        var params = {
+            TableName: "Profesores", 
+            Item: {
+                "id": name,
+                "password": password
+            }
+        }
+        docClient.put(params,function(err,data){
+            if (err) {
+                console.log('Error uploading file:', err);
+                res.send({ 'message': 'failed' })
+            } else {
+                console.log('Upload success at:', data.Location);
+                res.send({ 'message': 'uploaded' })
+            }
+        }); 
+    } else {
+        res.json({"falta":"true"})
+        /* 
+        let imagenDecodificada = Buffer.from(base64String, 'base64');
+
+        //parametros para s3 
+        let bucketname = 'imagesemi1proc';
+        let filepath = `estudiantes/${name}`;
+        var uploadParamsS3 = {
+            Bucket: bucketname,
+            Key: filepath,
+            Body: imagenDecodificada,
+            ACL: 'public-read',
+        };
+
+        s3.upload(uploadParamsS3, function sync(err, data) {
+            if (err) {
+                console.log('Error uploading file:', err);
+                res.send({ 'message': 'failed' })
+            } else {
+                console.log('Upload success at:', data.Location);
+                res.send({ 'message': 'uploaded' })
+            }
+        }); */
+    }
+
+
+}
+
 
 //imagesemi1proc
-const post_registro = (req, res) => {
-    let body = req.body;
-    let name = body.name;
-    let base64String = body.base64;
+//https://www.browserling.com/tools/image-to-base64 
+//https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Rekognition.html
 
-    //Decodificar imagen 
-    let imagenDecodificada = Buffer.from(base64String, 'base64');
-
-    //parametros para s3 
-    let bucketname = 'imagesemi1proc';
-    let filepath = `images/${name}`;
-    var uploadParamsS3 = {
-        Bucket: bucketname,
-        Key: filepath,
-        Body: imagenDecodificada,
-        ACL: 'public-read',
+const eliminar = (req, res) => {
+    var params = {
+        CollectionId: "profesores"
     };
-
-    s3.upload(uploadParamsS3, function sync(err, data) {
+    rekognition.createCollection(params, function (err, data) {
         if (err) {
             console.log('Error uploading file:', err);
             res.send({ 'message': 'failed' })
@@ -31,9 +82,46 @@ const post_registro = (req, res) => {
             res.send({ 'message': 'uploaded' })
         }
     });
+}
 
+
+
+const get_login = (req, res) => {
+    let id = req.query.id;
+    let params = {
+        TableName: "profesores",
+        Key: {
+            "id": id
+        }
+    }
+    docClient.get(params, function (err, data) {
+        if (err) {
+            res.json(err);
+        } else {
+            res.json(data);
+        }
+    });
 
 }
+
+const post_login = (req, res) => {
+    let image = req.body.image;
+    let imagenDec = Buffer.from(image, 'base64');
+    var params = {
+    };
+    rekognition.listCollections(params, function (err, data) {
+        if (err) {
+            console.log('Error uploading file:', err);
+            res.send({ 'message': err })
+        } else {
+            console.log('Upload success at:', data.Location);
+            res.send({ 'message': data.Location })
+        }
+    });
+}
+
+
+
 
 const post_comparar = (req, res) => {
     let body = req.body;
@@ -57,17 +145,20 @@ const post_comparar = (req, res) => {
     };
 
     rekognition.compareFaces(params, function (err, data) {
-        if (err){
+        if (err) {
             res.send({ 'message': err })
             console.log(err, err.stack); // an error occurred
-        }else{
-            res.send({ 'message': data }) 
+        } else {
+            res.send({ 'message': data })
             console.log(data);           // successful response
         }
     });
 }
 
 module.exports = {
+    login: get_login,
+    eliminar: eliminar,
     post_registro: post_registro,
+    loginface: post_login,
     post_comparar: post_comparar
 }

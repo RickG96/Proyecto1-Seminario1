@@ -1,3 +1,4 @@
+//NO SUBIR, LLAVES DE ACCESO A LOS SERVICIOSS
 let awsKeys = {
     dinamo: {
         region: 'us-east-2',
