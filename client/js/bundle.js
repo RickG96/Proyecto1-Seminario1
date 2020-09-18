@@ -269,8 +269,10 @@ loginImagen = function(canvas) {
     })
     .then(response => {
         console.log(response)
-        if(response.data.respuesta == true) {
-            console.log('login exitoso');
+        try {
+            alert('bienvenido: ' + response.data.respuesta.FaceMatches[0].Face.ExternalImageId);
+        } catch(error) {
+            alert("Error usuario desconocido 😐");
         }
     })
     .catch(error => {
