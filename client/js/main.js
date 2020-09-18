@@ -5,16 +5,19 @@ login = function() {
     let password = document.getElementById("contrasenia").value;
 
     let ingreso = {
-        usuario: user,
-        contrasenia: password
+        id: user
     }
 
-    axios.post('http://localhost:3000/iniciosesion', ingreso)
+    axios.get('http://localhost:3000/sesion/login?id=' + user)
         .then(response => {
-            console.log(response);
+            if(response.data.Item.password === password) {
+                console.log('login');
+            } else {
+                alert("Contraseña no valida 😐");
+            }
         })
         .catch(error => {
-            console.error(error);
+            alert("Error de ingreso 😐");
         })
 }
 
@@ -25,19 +28,48 @@ registro = function() {
     if(password1 === password2) {
         let user = document.getElementById("registroUsuario").value;
 
-        let nuevoUsuario = {
-            usuario: user,
-            contrasenia: password1
-        }
-
-        axios.post('http://localhost:3000/nuevousuario', nuevoUsuario)
+        axios.post('http://localhost:3000/sesion/registro', {
+                name: user,
+                password: password1,
+                base64: ""
+            })
             .then(response => {
                 console.log(response);
+                if(response.data.message == 'uploaded') {
+                    alert("Creado con exito");
+                } else {
+                    alert("Error 😐");
+                }
             })
             .catch(error => {
                 console.error(error);
-            })
+            });
     } else {
         alert("Las contraseñas no coinciden 😐");
     }
+}
+
+desplegar = function() {
+    document.getElementById("camara").style.display = 'block';
+    document.getElementById("btnDesplegar").style.display = 'none';
+}
+
+
+registroImagen = function(canvas, user, password1) {
+    axios.post('http://localhost:3000/sesion/registro', {
+                name: user,
+                password: password1,
+                base64: canvas.split(",")[1]
+            })
+            .then(response => {
+                console.log(response);
+                if(response.data.message == 'uploaded') {
+                    alert("Creado con exito");
+                } else {
+                    alert("Error 😐");
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
 }

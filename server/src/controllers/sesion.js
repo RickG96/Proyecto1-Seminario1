@@ -75,7 +75,7 @@ const post_registro = (req, res) => {
                 res.send({ 'message': err })
             } else {
                 console.log('Upload success at:', data);
-                res.send({ 'message': data.message })
+                res.send({ 'message': 'uploaded' })
             }
         });
     } else {
@@ -129,7 +129,7 @@ const post_registro = (req, res) => {
                                 res.send({ 'message': err })
                             } else {
                                 console.log('Upload success at:', data.Location);
-                                res.send({ 'message': data.Location })
+                                res.send({ 'message': 'uploaded' })
                             }
                         });
                     }
