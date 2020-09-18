@@ -6,7 +6,7 @@ const orden_controller = require('../controllers/sesion');
 router.get('/login',orden_controller.login); 
 router.post('/loginface',orden_controller.loginface); 
 router.post('/registro',orden_controller.post_registro); 
-router.post('/comparar',orden_controller.post_comparar); 
+//router.post('/comparar',orden_controller.post_comparar); 
 
 router.get('/eliminar',orden_controller.eliminar); 
 

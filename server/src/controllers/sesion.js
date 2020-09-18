@@ -1,10 +1,44 @@
 const awsKeys = require('../conexion/conexion');
 
-const AWS = require('aws-sdk');
-//AWS.config.update(awsKeys.dinamo);
-const s3 = new AWS.S3(awsKeys.s3);
-const rekognition = new AWS.Rekognition(awsKeys.rekognition);
-const docClient = new AWS.DynamoDB.DocumentClient(); 
+const get_login = (req, res) => {
+    const AWS = require('aws-sdk');
+    AWS.config.update(awsKeys.dinamo);
+    const docClient = new AWS.DynamoDB.DocumentClient(); 
+
+    let id = req.query.id;
+    let params = {
+        TableName: "Profesores",
+        Key: {
+            "id": id
+        }
+    }
+    docClient.get(params, function (err, data) {
+        if (err) {
+            res.json(err);
+        } else {
+            res.json(data);
+        }
+    });
+}
+
+const post_login = (req, res) => {/*
+    const AWS = require('aws-sdk');
+
+    let image = req.body.image;
+    let imagenDec = Buffer.from(image, 'base64');
+    var params = {
+    };
+    rekognition.listCollections(params, function (err, data) {
+        if (err) {
+            console.log('Error uploading file:', err);
+            res.send({ 'message': err })
+        } else {
+            console.log('Upload success at:', data.Location);
+            res.send({ 'message': data.Location })
+        }
+    }); */ 
+}
+
 
 const post_registro = (req, res) => {
     //conexion aws
@@ -37,6 +71,11 @@ const post_registro = (req, res) => {
         }); 
     } else {
         res.json({"falta":"true"})
+        /*
+        const s3 = new AWS.S3(awsKeys.s3);
+        const rekognition = new AWS.Rekognition(awsKeys.rekognition);* 
+
+
         /* 
         let imagenDecodificada = Buffer.from(base64String, 'base64');
 
@@ -86,42 +125,8 @@ const eliminar = (req, res) => {
 
 
 
-const get_login = (req, res) => {
-    let id = req.query.id;
-    let params = {
-        TableName: "profesores",
-        Key: {
-            "id": id
-        }
-    }
-    docClient.get(params, function (err, data) {
-        if (err) {
-            res.json(err);
-        } else {
-            res.json(data);
-        }
-    });
 
-}
-
-const post_login = (req, res) => {
-    let image = req.body.image;
-    let imagenDec = Buffer.from(image, 'base64');
-    var params = {
-    };
-    rekognition.listCollections(params, function (err, data) {
-        if (err) {
-            console.log('Error uploading file:', err);
-            res.send({ 'message': err })
-        } else {
-            console.log('Upload success at:', data.Location);
-            res.send({ 'message': data.Location })
-        }
-    });
-}
-
-
-
+/*
 
 const post_comparar = (req, res) => {
     let body = req.body;
@@ -153,12 +158,15 @@ const post_comparar = (req, res) => {
             console.log(data);           // successful response
         }
     });
-}
+} */ 
 
 module.exports = {
     login: get_login,
-    eliminar: eliminar,
-    post_registro: post_registro,
     loginface: post_login,
-    post_comparar: post_comparar
+    post_registro: post_registro,
+    
+
+    //post_comparar: post_comparar,
+
+    eliminar: eliminar
 }
