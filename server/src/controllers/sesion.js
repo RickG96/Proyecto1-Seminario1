@@ -2,9 +2,9 @@ const awsKeys = require('../conexion/conexion');
 var uuid = require('uuid');
 
 const get_login = (req, res) => {
-    const AWS = require('aws-sdk');
+    let AWS = require('aws-sdk');
     AWS.config.update(awsKeys.dinamo);
-    const docClient = new AWS.DynamoDB.DocumentClient();
+    let docClient = new AWS.DynamoDB.DocumentClient();
     let id = req.query.id;
     let params = {
         TableName: "Profesores",
@@ -22,8 +22,8 @@ const get_login = (req, res) => {
 }
 
 const post_login = (req, res) => {
-    const AWS = require('aws-sdk');
-    const rekognition = new AWS.Rekognition(awsKeys.rekognition);
+    let AWS = require('aws-sdk');
+    let rekognition = new AWS.Rekognition(awsKeys.rekognition);
     let image = req.body.image;
     let imagenDec = Buffer.from(image, 'base64');
     var params = {
@@ -53,7 +53,7 @@ const post_login = (req, res) => {
 
 const post_registro = (req, res) => {
     //conexion aws
-    const AWS = require('aws-sdk');
+    let AWS = require('aws-sdk');
     //fin de conexion 
     let name = req.body.name;
     let password = req.body.password;
@@ -61,7 +61,7 @@ const post_registro = (req, res) => {
     //Decodificar imagen 
     if (base64String === "") {
         AWS.config.update(awsKeys.dinamo);
-        const docClient = new AWS.DynamoDB.DocumentClient();
+        let docClient = new AWS.DynamoDB.DocumentClient();
         var params = {
             TableName: "Profesores",
             Item: {
@@ -81,7 +81,7 @@ const post_registro = (req, res) => {
     } else {
         let imagenDecodificada = Buffer.from(base64String, 'base64');
         //insertar al bucket 
-        const s3 = new AWS.S3(awsKeys.s3);
+        let s3 = new AWS.S3(awsKeys.s3);
         var imageId = `${uuid()}.jpg`;
         var filepath = `profesores/${imageId}`;
         var uploadParamsS3 = {
@@ -95,7 +95,7 @@ const post_registro = (req, res) => {
                 console.log('Error uploading file:', err);
                 res.send({ 'message': err })
             } else {
-                const rekognition = new AWS.Rekognition(awsKeys.rekognition);
+                let rekognition = new AWS.Rekognition(awsKeys.rekognition);
                 var params = {
                     CollectionId: "profesores",
                     DetectionAttributes: [
@@ -112,9 +112,9 @@ const post_registro = (req, res) => {
                         console.log('Error uploading file:', err);
                         res.send({ 'message': err })
                     } else {
-                        const baseAWS = require('aws-sdk');
+                        let baseAWS = require('aws-sdk');
                         baseAWS.config.update(awsKeys.dinamo);
-                        const docClient = new baseAWS.DynamoDB.DocumentClient();
+                        let docClient = new baseAWS.DynamoDB.DocumentClient();
                         var params = {
                             TableName: "Profesores",
                             Item: {
