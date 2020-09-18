@@ -1,11 +1,10 @@
 const awsKeys = require('../conexion/conexion');
-var  uuid  =  require ( 'uuid' ) ;
+var uuid = require('uuid');
 
 const get_login = (req, res) => {
     const AWS = require('aws-sdk');
     AWS.config.update(awsKeys.dinamo);
-    const docClient = new AWS.DynamoDB.DocumentClient(); 
-
+    const docClient = new AWS.DynamoDB.DocumentClient();
     let id = req.query.id;
     let params = {
         TableName: "Profesores",
@@ -17,35 +16,42 @@ const get_login = (req, res) => {
         if (err) {
             res.json(err);
         } else {
-            res.json(data);
+            res.json(data.Location);
         }
     });
 }
 
-const post_login = (req, res) => {/*
+const post_login = (req, res) => {
     const AWS = require('aws-sdk');
-
+    const rekognition = new AWS.Rekognition(awsKeys.rekognition);
     let image = req.body.image;
     let imagenDec = Buffer.from(image, 'base64');
     var params = {
+        CollectionId: "profesores",
+        FaceMatchThreshold: 95,
+        Image: {
+            Bytes: imagenDec
+        },
+        MaxFaces: 1
     };
-    rekognition.listCollections(params, function (err, data) {
+    rekognition.searchFacesByImage(params, function (err, data) {
         if (err) {
             console.log('Error uploading file:', err);
             res.send({ 'message': err })
         } else {
-            console.log('Upload success at:', data.Location);
-            res.send({ 'message': data.Location })
-        }
-    }); */ 
-}
+            console.log('Upload success at:', data);
+            if(){
 
+            }else{
+                res.send({"respuesta":"falso"}); 
+            }
+        }
+    });
+}
 
 const post_registro = (req, res) => {
     //conexion aws
     const AWS = require('aws-sdk');
-    AWS.config.update(awsKeys.dinamo);
-    const docClient = new AWS.DynamoDB.DocumentClient();
     //fin de conexion 
     let name = req.body.name;
     let password = req.body.password;
@@ -53,28 +59,29 @@ const post_registro = (req, res) => {
     //Decodificar imagen 
     if (base64String === "") {
         AWS.config.update(awsKeys.dinamo);
-        const docClient = new AWS.DynamoDB.DocumentClient(); 
+        const docClient = new AWS.DynamoDB.DocumentClient();
         var params = {
-            TableName: "Profesores", 
+            TableName: "Profesores",
             Item: {
                 "id": name,
                 "password": password
             }
         }
-        docClient.put(params,function(err,data){
+        docClient.put(params, function (err, data) {
             if (err) {
                 console.log('Error uploading file:', err);
-                res.send({ 'message': 'failed' })
+                res.send({ 'message': err })
             } else {
-                console.log('Upload success at:', data.Location);
-                res.send({ 'message': 'uploaded' })
+                console.log('Upload success at:', data);
+                res.send({ 'message': data.Location })
             }
-        }); 
-    } else { /*
+        });
+    } else {
         let imagenDecodificada = Buffer.from(base64String, 'base64');
         //insertar al bucket 
         const s3 = new AWS.S3(awsKeys.s3);
-        var filepath = `estudiantes/${uuid()}.jpg`; 
+        var imageId = `${uuid()}.jpg`;
+        var filepath = `estudiantes/${imageId}`;
         var uploadParamsS3 = {
             Bucket: 'imagesemi1proc',
             Key: filepath,
@@ -89,21 +96,45 @@ const post_registro = (req, res) => {
                 const rekognition = new AWS.Rekognition(awsKeys.rekognition);
                 var params = {
                     CollectionId: "profesores",
+                    DetectionAttributes: [
+                    ],
                     Image: {
-                        S30bject:{
-                            Bucket: 'imagesemi1proc',
-                            name: filepath,
-
-                        }
+                        Bytes: imagenDecodificada
                     },
-                    ExternalImageId: filepath,
-
+                    ExternalImageId: imageId,
+                    MaxFaces: 1,
+                    QualityFilter: 'HIGH'
                 }
+                rekognition.indexFaces(params, function (err, data) {
+                    if (err) {
+                        console.log('Error uploading file:', err);
+                        res.send({ 'message': err })
+                    } else {
+                        const baseAWS = require('aws-sdk');
+                        baseAWS.config.update(awsKeys.dinamo);
+                        const docClient = new baseAWS.DynamoDB.DocumentClient();
+                        var params = {
+                            TableName: "Profesores",
+                            Item: {
+                                "id": name,
+                                "password": password,
+                                "image": filepath
+                            }
+                        }
+                        docClient.put(params, function (err, data) {
+                            if (err) {
+                                console.log('Error uploading file:', err);
+                                res.send({ 'message': err })
+                            } else {
+                                console.log('Upload success at:', data.Location);
+                                res.send({ 'message': data.Location })
+                            }
+                        });
+                    }
+                });
             }
-        });*/
+        });
     }
-
-
 }
 
 
@@ -161,13 +192,13 @@ const post_comparar = (req, res) => {
             console.log(data);           // successful response
         }
     });
-} */ 
+} */
 
 module.exports = {
     login: get_login,
     loginface: post_login,
     post_registro: post_registro,
-    
+
 
     //post_comparar: post_comparar,
 
