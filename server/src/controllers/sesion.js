@@ -1,4 +1,5 @@
 const awsKeys = require('../conexion/conexion');
+var  uuid  =  require ( 'uuid' ) ;
 
 const get_login = (req, res) => {
     const AWS = require('aws-sdk');
@@ -42,9 +43,9 @@ const post_login = (req, res) => {/*
 
 const post_registro = (req, res) => {
     //conexion aws
-    const AWS2 = require('aws-sdk');
-    AWS2.config.update(awsKeys.dinamo);
-    const docClient = new AWS2.DynamoDB.DocumentClient();
+    const AWS = require('aws-sdk');
+    AWS.config.update(awsKeys.dinamo);
+    const docClient = new AWS.DynamoDB.DocumentClient();
     //fin de conexion 
     let name = req.body.name;
     let password = req.body.password;
@@ -69,35 +70,37 @@ const post_registro = (req, res) => {
                 res.send({ 'message': 'uploaded' })
             }
         }); 
-    } else {
-        res.json({"falta":"true"})
-        /*
-        const s3 = new AWS.S3(awsKeys.s3);
-        const rekognition = new AWS.Rekognition(awsKeys.rekognition);* 
-
-
-        /* 
+    } else { /*
         let imagenDecodificada = Buffer.from(base64String, 'base64');
-
-        //parametros para s3 
-        let bucketname = 'imagesemi1proc';
-        let filepath = `estudiantes/${name}`;
+        //insertar al bucket 
+        const s3 = new AWS.S3(awsKeys.s3);
+        var filepath = `estudiantes/${uuid()}.jpg`; 
         var uploadParamsS3 = {
-            Bucket: bucketname,
+            Bucket: 'imagesemi1proc',
             Key: filepath,
             Body: imagenDecodificada,
             ACL: 'public-read',
         };
-
         s3.upload(uploadParamsS3, function sync(err, data) {
             if (err) {
                 console.log('Error uploading file:', err);
-                res.send({ 'message': 'failed' })
+                res.send({ 'message': err })
             } else {
-                console.log('Upload success at:', data.Location);
-                res.send({ 'message': 'uploaded' })
+                const rekognition = new AWS.Rekognition(awsKeys.rekognition);
+                var params = {
+                    CollectionId: "profesores",
+                    Image: {
+                        S30bject:{
+                            Bucket: 'imagesemi1proc',
+                            name: filepath,
+
+                        }
+                    },
+                    ExternalImageId: filepath,
+
+                }
             }
-        }); */
+        });*/
     }
 
 
