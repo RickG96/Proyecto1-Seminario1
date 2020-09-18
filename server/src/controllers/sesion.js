@@ -40,10 +40,12 @@ const post_login = (req, res) => {
             res.send({ 'message': err })
         } else {
             console.log('Upload success at:', data);
-            if(){
-
-            }else{
-                res.send({"respuesta":"falso"}); 
+            try {
+                if(data.message.FaceMatches.Similarity!=undefined){
+                    res.send({ "respuesta": "true" });
+                }
+            } catch (error) {
+                res.send({ "respuesta": "falso" });
             }
         }
     });
@@ -73,7 +75,7 @@ const post_registro = (req, res) => {
                 res.send({ 'message': err })
             } else {
                 console.log('Upload success at:', data);
-                res.send({ 'message': data.Location })
+                res.send({ 'message': data.message })
             }
         });
     } else {
