@@ -83,7 +83,7 @@ const post_registro = (req, res) => {
         //insertar al bucket 
         const s3 = new AWS.S3(awsKeys.s3);
         var imageId = `${uuid()}.jpg`;
-        var filepath = `estudiantes/${imageId}`;
+        var filepath = `profesores/${imageId}`;
         var uploadParamsS3 = {
             Bucket: 'imagesemi1proc',
             Key: filepath,
