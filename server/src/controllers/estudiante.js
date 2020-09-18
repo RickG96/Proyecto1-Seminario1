@@ -32,7 +32,7 @@ const post_registro = (req, res) => {
                 Image: {
                     Bytes: imagenDecodificada
                 },
-                ExternalImageId: imageId,
+                ExternalImageId: id,
                 MaxFaces: 1,
                 QualityFilter: 'HIGH'
             }

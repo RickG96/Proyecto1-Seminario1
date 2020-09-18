@@ -105,7 +105,7 @@ const post_registro = (req, res) => {
                     Image: {
                         Bytes: imagenDecodificada
                     },
-                    ExternalImageId: imageId,
+                    ExternalImageId: name,
                     MaxFaces: 1,
                     QualityFilter: 'HIGH'
                 }
@@ -147,6 +147,8 @@ const post_registro = (req, res) => {
 //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Rekognition.html
 
 const eliminar = (req, res) => {
+    let AWS = require('aws-sdk');
+    let rekognition = new AWS.Rekognition(awsKeys.rekognition);
     var params = {
         CollectionId: "profesores"
     };
