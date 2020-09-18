@@ -41,8 +41,10 @@ const post_login = (req, res) => {
         } else {
             console.log('Upload success at:', data);
             try {
-                if(data.message.FaceMatches.Similarity!=undefined){
-                    res.send({ "respuesta": "true" });
+                if(data.FaceMatches[0].Similarity > 85){
+                    res.send({ "respuesta": data });
+                } else {
+                    res.send({ "respuesta": "falso" });
                 }
             } catch (error) {
                 res.send({ "respuesta": "falso" });

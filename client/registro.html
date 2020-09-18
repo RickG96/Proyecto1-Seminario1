@@ -44,7 +44,7 @@
                                     <button id="snap" class="btn btn-ingresar btn-lg btn-block">Tomar foto y subir</button>
                                 </div>
                                     
-                                <canvas id="canvas" width="360" height="360"></canvas> 
+                                <canvas id="canvas" width="360" height="360" style="display: none;"></canvas> 
                             </div>
                             <button type="button" id="btnDesplegar" onclick="desplegar()" class="btn btn-ingresar btn-lg btn-block">
                                 Subir 
@@ -101,14 +101,15 @@
         var context = canvas.getContext('2d');
 
         snap.addEventListener("click", function() {
-            console.log(canvas.toDataURL('image/base64', 1.0));
+            console.log(canvas.toDataURL('image/jpeg', 1.0));
+            context.drawImage(video, 0, 0, 640, 480);
             let password1 = document.getElementById("registroPassword1").value;
             let password2 = document.getElementById("registroPassword2").value;
 
             if(password1 === password2) {
                 let user = document.getElementById("registroUsuario").value;
 
-                registroImagen(canvas.toDataURL('image/base64', 1.0), user, password1);
+                registroImagen(canvas.toDataURL('image/jpeg', 1.0).split(",")[1], user, password1);
             } else {
                 alert("Las contraseñas no coinciden 😐");
             }

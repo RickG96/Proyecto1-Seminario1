@@ -224,6 +224,7 @@ registro = function() {
                 console.log(response);
                 if(response.data.message == 'uploaded') {
                     alert("Creado con exito");
+                    window.location.href = "index.html";
                 } else {
                     alert("Error 😐");
                 }
@@ -246,12 +247,13 @@ registroImagen = function(canvas, user, password1) {
     axios.post('http://localhost:3000/sesion/registro', {
                 name: user,
                 password: password1,
-                base64: canvas.split(",")[1]
+                base64: canvas
             })
             .then(response => {
                 console.log(response);
                 if(response.data.message == 'uploaded') {
                     alert("Creado con exito");
+                    window.location.href = "index.html";
                 } else {
                     alert("Error 😐");
                 }
@@ -259,6 +261,21 @@ registroImagen = function(canvas, user, password1) {
             .catch(error => {
                 console.error(error);
             });
+}
+
+loginImagen = function(canvas) {
+    axios.post('http://localhost:3000/sesion/loginface', {
+        image: canvas
+    })
+    .then(response => {
+        console.log(response)
+        if(response.data.respuesta == true) {
+            console.log('login exitoso');
+        }
+    })
+    .catch(error => {
+        console.error(error);
+    })
 }
 },{"axios":3}],3:[function(require,module,exports){
 module.exports = require('./lib/axios');
