@@ -1,29 +1,32 @@
-const awsKeys = require('../conexion/conexion');
+const awsKeys = new require('../conexion/conexion');
+const AWS = require('aws-sdk');
+const S3 = new AWS.S3(awsKeys.S3);
+const Rekognition = new AWS.Rekognition(awsKeys.Rekognition);
+const DynamoDB = new AWS.DynamoDB(awsKeys.DynamoDB);
 var uuid = require('uuid');
 
 const get_login = (req, res) => {
-    let AWS = require('aws-sdk');
-    AWS.config.update(awsKeys.dinamo);
-    let docClient = new AWS.DynamoDB.DocumentClient();
     let id = req.query.id;
     let params = {
         TableName: "Profesores",
         Key: {
-            "id": id
+            "id": { S: id }
         }
     }
-    docClient.get(params, function (err, data) {
+    DynamoDB.getItem(params, function (err, data) {
         if (err) {
             res.json(err);
         } else {
-            res.json(data.Location);
+            try {
+                res.json({"id":data.Item.id.S,"password":data.Item.password.S});
+            } catch (error) {
+                res.json({}); 
+            }
         }
     });
 }
 
 const post_login = (req, res) => {
-    let AWS = require('aws-sdk');
-    let rekognition = new AWS.Rekognition(awsKeys.rekognition);
     let image = req.body.image;
     let imagenDec = Buffer.from(image, 'base64');
     var params = {
@@ -34,14 +37,14 @@ const post_login = (req, res) => {
         },
         MaxFaces: 1
     };
-    rekognition.searchFacesByImage(params, function (err, data) {
+    Rekognition.searchFacesByImage(params, function (err, data) {
         if (err) {
             console.log('Error uploading file:', err);
             res.send({ 'message': err })
         } else {
             console.log('Upload success at:', data);
             try {
-                if(data.FaceMatches[0].Similarity > 85){
+                if (data.FaceMatches[0].Similarity > 85) {
                     res.send({ "respuesta": data });
                 } else {
                     res.send({ "respuesta": "falso" });
@@ -54,24 +57,19 @@ const post_login = (req, res) => {
 }
 
 const post_registro = (req, res) => {
-    //conexion aws
-    let AWS = require('aws-sdk');
-    //fin de conexion 
     let name = req.body.name;
     let password = req.body.password;
     let base64String = req.body.base64;
     //Decodificar imagen 
     if (base64String === "") {
-        AWS.config.update(awsKeys.dinamo);
-        let docClient = new AWS.DynamoDB.DocumentClient();
         var params = {
             TableName: "Profesores",
             Item: {
-                "id": name,
-                "password": password
+                "id": { S: name },
+                "password": { S: password }
             }
         }
-        docClient.put(params, function (err, data) {
+        DynamoDB.putItem(params, function (err, data) {
             if (err) {
                 console.log('Error uploading file:', err);
                 res.send({ 'message': err })
@@ -83,7 +81,6 @@ const post_registro = (req, res) => {
     } else {
         let imagenDecodificada = Buffer.from(base64String, 'base64');
         //insertar al bucket 
-        let s3 = new AWS.S3(awsKeys.s3);
         var imageId = `${uuid()}.jpg`;
         var filepath = `profesores/${imageId}`;
         var uploadParamsS3 = {
@@ -92,12 +89,11 @@ const post_registro = (req, res) => {
             Body: imagenDecodificada,
             ACL: 'public-read',
         };
-        s3.upload(uploadParamsS3, function sync(err, data) {
+        S3.upload(uploadParamsS3, function sync(err, data) {
             if (err) {
                 console.log('Error uploading file:', err);
                 res.send({ 'message': err })
             } else {
-                let rekognition = new AWS.Rekognition(awsKeys.rekognition);
                 var params = {
                     CollectionId: "profesores",
                     DetectionAttributes: [
@@ -109,23 +105,20 @@ const post_registro = (req, res) => {
                     MaxFaces: 1,
                     QualityFilter: 'HIGH'
                 }
-                rekognition.indexFaces(params, function (err, data) {
+                Rekognition.indexFaces(params, function (err, data) {
                     if (err) {
                         console.log('Error uploading file:', err);
                         res.send({ 'message': err })
                     } else {
-                        let baseAWS = require('aws-sdk');
-                        baseAWS.config.update(awsKeys.dinamo);
-                        let docClient = new baseAWS.DynamoDB.DocumentClient();
                         var params = {
                             TableName: "Profesores",
                             Item: {
-                                "id": name,
-                                "password": password,
-                                "image": filepath
+                                "id": { S: name },
+                                "password": { S: password },
+                                "image": { S: filepath }
                             }
                         }
-                        docClient.put(params, function (err, data) {
+                        DynamoDB.putItem(params, function (err, data) {
                             if (err) {
                                 console.log('Error uploading file:', err);
                                 res.send({ 'message': err })
@@ -147,12 +140,10 @@ const post_registro = (req, res) => {
 //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Rekognition.html
 
 const eliminar = (req, res) => {
-    let AWS = require('aws-sdk');
-    let rekognition = new AWS.Rekognition(awsKeys.rekognition);
     var params = {
-        CollectionId: "profesores"
+        CollectionId: "estudiantes"
     };
-    rekognition.createCollection(params, function (err, data) {
+    Rekognition.createCollection(params, function (err, data) {
         if (err) {
             console.log('Error uploading file:', err);
             res.send({ 'message': 'failed' })
@@ -163,50 +154,12 @@ const eliminar = (req, res) => {
     });
 }
 
-
-
-
-/*
-
-const post_comparar = (req, res) => {
-    let body = req.body;
-    let imagen1 = body.imagen1;
-    let imagen2 = body.imagen2;
-
-    var params = {
-        SimilarityThreshold: 90,
-        SourceImage: {
-            S3Object: {
-                Bucket: "imagesemi1proc",
-                Name: imagen1
-            }
-        },
-        TargetImage: {
-            S3Object: {
-                Bucket: "imagesemi1proc",
-                Name: imagen2
-            }
-        }
-    };
-
-    rekognition.compareFaces(params, function (err, data) {
-        if (err) {
-            res.send({ 'message': err })
-            console.log(err, err.stack); // an error occurred
-        } else {
-            res.send({ 'message': data })
-            console.log(data);           // successful response
-        }
-    });
-} */
-
 module.exports = {
     login: get_login,
     loginface: post_login,
     post_registro: post_registro,
-
-
-    //post_comparar: post_comparar,
-
     eliminar: eliminar
 }
+
+//https://github.com/FherHerand/semi1-lab-examples-1s-2020/blob/master/NodeServer/index.js
+//https://medium.com/@thianlopezz/configuraci%C3%B3n-de-ambiente-de-producci%C3%B3n-para-una-aplicaci%C3%B3n-en-node-js-9f867b464ad9
