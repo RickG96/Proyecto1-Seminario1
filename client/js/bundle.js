@@ -299,6 +299,25 @@ nuevoEstudiante = function() {
     }
 }
 
+nuevoGrupo = function() {
+    let idGrupo = document.getElementById("grupoId").value;
+    
+    if(idGrupo != "" && imgBase64 != "") {
+        axios.post('https://mc8lu3qkh1.execute-api.us-east-2.amazonaws.com/V1/asistencia/insertar', {
+            id: idGrupo,
+            base64: imgBase64
+        })
+        .then(response => {
+            alert('Grupo creado con éxito!');
+        })
+        .catch(err => {
+            console.log(err);
+        })
+    } else {
+        alert('Faltan datos...');
+    }
+}
+
 getImager64 = function() {
     let inputImg = document.getElementById('inputFoto');
 
@@ -311,6 +330,83 @@ getImager64 = function() {
     }
 
     reader.readAsDataURL(file);
+}
+
+getImager64G = function() {
+    let inputImg = document.getElementById('inputGrupo');
+
+    let file = inputImg.files[0];
+    reader = new FileReader();
+
+    reader.onloadend = function() {
+        imgBase64 = reader.result.split(",")[1];
+        console.log(imgBase64);
+    }
+
+    reader.readAsDataURL(file);
+}
+
+let urlImg = "https://imagesemi1proc.s3.us-east-2.amazonaws.com/";
+
+getEstudiantes = function() {
+    axios.get('http://localhost:3000/estudiante/listado')
+        .then(res => {
+            console.log(res.data.Items);
+            
+            
+            for(i = 0; i < res.data.Items.length; i++) {
+                let divEstudiantes = document.getElementById('estudiantes');
+                let nuevo = document.createElement('div');
+                nuevo.innerHTML = 
+                    `<div class="col" style="padding-top: 15px">
+                        <div class="card" style="width: 15rem;">
+                            <img src="${ urlImg + res.data.Items[i].image.S }" class="card-img-top" style="height: 13rem" alt="...">
+                            <div class="card-body">
+                                <p class="card-text">${res.data.Items[i].id.S}</p>
+                            </div>
+                        </div>
+                    </div>`;
+                    divEstudiantes.appendChild(nuevo);
+            }
+            
+        })
+        .catch(err => {
+            console.log(err);
+        })
+}
+
+let urlImgGrp = "https://imagesemi1proc.s3.us-east-2.amazonaws.com/";
+
+getGrupos = function() {
+    axios.get('https://mc8lu3qkh1.execute-api.us-east-2.amazonaws.com/V1/asistencia/imagen')
+        .then(res => {
+            console.log(res.data);
+            
+            
+            for(i = 0; i < res.data.length; i++) {
+                let divEstudiantes = document.getElementById('grupos');
+                let nuevo = document.createElement('div');
+                nuevo.innerHTML = 
+                    `<div class="col" style="padding-top: 15px">
+                        <div class="card" style="width: 15rem;">
+                            <img src="${ urlImgGrp + res.data[i].S }" class="card-img-top" style="height: 13rem" alt="...">
+                            <div class="card-body">
+                                <p class="card-text">Grupo ${ i }</p>
+                            </div>
+                        </div>
+                    </div>`;
+                    divEstudiantes.appendChild(nuevo);
+            }
+            
+        })
+        .catch(err => {
+            console.log(err);
+        })
+}
+
+getDatos = function() {
+    getGrupos();
+    getEstudiantes();
 }
 },{"axios":3}],3:[function(require,module,exports){
 module.exports = require('./lib/axios');

@@ -17,7 +17,7 @@
     </style>
     <title>Inicio</title>
   </head>
-  <body>
+  <body onload="getDatos()">
     <div class="container" style="padding-top: 25px;">
         <nav class="navbar navbar-light bg-light">
             <span class="navbar-brand mb-0 h1">uAttendance</span>
@@ -38,60 +38,10 @@
             <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                 <div class="row">
                     <div class="col-8">
-                        <div class="row">
-                            <div class="col" style="padding-top: 15px">
-                                <div class="card" style="width: 15rem;">
-                                    <img src="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Xayah_0.jpg" class="card-img-top" alt="...">
-                                    <div class="card-body">
-                                        <p class="card-text">Nombre</p>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="row" id="estudiantes">
+
                             
-                            <div class="col" style="padding-top: 15px">
-                                <div class="card" style="width: 15rem;">
-                                    <img src="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Xayah_0.jpg" class="card-img-top" alt="...">
-                                    <div class="card-body">
-                                        <p class="card-text">Nombre</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col" style="padding-top: 15px">
-                                <div class="card" style="width: 15rem;">
-                                    <img src="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Xayah_0.jpg" class="card-img-top" alt="...">
-                                    <div class="card-body">
-                                        <p class="card-text">Nombre</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col" style="padding-top: 15px">
-                                <div class="card" style="width: 15rem;">
-                                    <img src="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Xayah_0.jpg" class="card-img-top" alt="...">
-                                    <div class="card-body">
-                                        <p class="card-text">Nombre</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col" style="padding-top: 15px">
-                                <div class="card" style="width: 15rem;">
-                                    <img src="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Xayah_0.jpg" class="card-img-top" alt="...">
-                                    <div class="card-body">
-                                        <p class="card-text">Nombre</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col" style="padding-top: 15px">
-                                <div class="card" style="width: 15rem;">
-                                    <img src="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Xayah_0.jpg" class="card-img-top" alt="...">
-                                    <div class="card-body">
-                                        <p class="card-text">Nombre</p>
-                                    </div>
-                                </div>
-                            </div>
+                            
                         </div>
                     </div>
                     <div class="col-4">
@@ -113,7 +63,34 @@
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">...</div>
+            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                <div class="row">
+                    <div class="col-8">
+                        <div class="row" id="grupos">
+
+                            
+                            
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="card" style="width: 20rem;">
+                            <div class="card-body">
+                                <form>
+                                    <div class="form-group">
+                                      <label for="grupoId">ID Grupo</label>
+                                      <input type="text" class="form-control" id="grupoId">
+                                    </div>
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="inputGrupo" onchange="getImager64G()" required>
+                                        <label class="custom-file-label" for="inputGrupo">Elegir</label>
+                                    </div>
+                                </form>
+                            </div>
+                            <button type="submit" id="btnGrupo" onclick="nuevoGrupo()" class="btn btn-ingresar btn-lg btn-block">Agregar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
           </div>
     </div>
