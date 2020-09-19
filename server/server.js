@@ -12,10 +12,11 @@ app.use(bodyParser.json({ limit: '5mb', extended: true }));
 
 var sesion = require('./src/routes/sesion'); 
 var estudiante = require('./src/routes/estudiante'); 
-//var asistencia = require('./src/routes/asistencia'); 
+var asistencia = require('./src/routes/asistencia'); 
 
 app.use('/sesion',sesion); 
 app.use('/estudiante',estudiante); 
+app.use('/asistencia',asistencia); 
 
 app.listen(3000, (err) => {
     if (err) console.log('Ocurrio un error'), process.exit(1);
