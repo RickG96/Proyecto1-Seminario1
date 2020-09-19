@@ -217,7 +217,54 @@ getGrupos = function() {
         })
 }
 
+getAsistencia = function() {
+    axios.get('https://mc8lu3qkh1.execute-api.us-east-2.amazonaws.com/V1/asistencia/estudiante')
+        .then(res => {
+            
+            for(let i = 0; i < res.data.Items.length; i++) {
+                let divAsistencia = document.getElementById('asistencia');
+                let nuevaTabla = document.createElement('table');
+                nuevaTabla.classList.add('table');
+                let header = nuevaTabla.createTHead();
+                let hrow = header.insertRow(0);
+                let hcello = hrow.insertCell(0);
+                let hcell = hrow.insertCell(1);
+                hcell.innerHTML = '<img src="' + urlImgGrp + res.data.Items[i].image.S + '" style="width: 15rem;height: 13rem;"/>';
+                let row = nuevaTabla.insertRow(nuevaTabla.length);
+                let estudiante = row.insertCell(0);
+                let foto = row.insertCell(1);
+                let asistencia = row.insertCell(2);
+                estudiante.innerHTML = 'Nombre';
+                foto.innerHTML = 'Foto';
+                asistencia.innerHTML = 'Asistencia';
+                for(let j = 0; j < res.data.Items[i].estudiantesSi.L.length; j++) {
+                    let row = nuevaTabla.insertRow(nuevaTabla.length);
+                    let estudiante = row.insertCell(0);
+                    let foto = row.insertCell(1);
+                    let asistencia = row.insertCell(2);
+                    estudiante.innerHTML = res.data.Items[i].estudiantesSi.L[j].L[0].S;
+                    foto.innerHTML = '<img src="' + urlImg + res.data.Items[i].estudiantesSi.L[j].L[1].S + '" style="width: 15rem;height: 13rem;"/>';
+                    asistencia.innerHTML = 'si';
+                }
+                for(let j = 0; j < res.data.Items[i].estudiantesNo.L.length; j++) {
+                    let row = nuevaTabla.insertRow(nuevaTabla.length);
+                    let estudiante = row.insertCell(0);
+                    let foto = row.insertCell(1);
+                    let asistencia = row.insertCell(2);
+                    estudiante.innerHTML = res.data.Items[i].estudiantesNo.L[j].L[0].S;
+                    foto.innerHTML = '<img src="' + urlImg + res.data.Items[i].estudiantesNo.L[j].L[1].S + '" style="width: 15rem;height: 13rem;"/>';
+                    asistencia.innerHTML = 'no';
+                }
+                divAsistencia.appendChild(nuevaTabla);
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        })
+}
+
 getDatos = function() {
     getGrupos();
     getEstudiantes();
+    getAsistencia();
 }
