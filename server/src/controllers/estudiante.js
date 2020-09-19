@@ -63,6 +63,20 @@ const post_registro = (req, res) => {
     });
 }
 
+const get_listado = (req, res) => {
+    let params = {
+        TableName: "Estudiantes",
+    }
+    DynamoDB.scan(params, function (err, data) {
+        if (err) {
+            res.json(err);
+        } else {
+            res.json(data); 
+        }
+    });
+}
+
 module.exports = {
     post_registro: post_registro,
+    get_listado: get_listado
 }
