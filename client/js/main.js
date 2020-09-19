@@ -4,14 +4,11 @@ login = function() {
     let user = document.getElementById("usuario").value;
     let password = document.getElementById("contrasenia").value;
 
-    let ingreso = {
-        id: user
-    }
-
     axios.get('http://localhost:3000/sesion/login?id=' + user)
         .then(response => {
-            if(response.data.Item.password === password) {
-                console.log('login');
+            if(response.data.password === password) {
+                alert('Bienvenido: ' + response.data.id + ' 😉');
+                window.location.href = "landing.html";
             } else {
                 alert("Contraseña no valida 😐");
             }
@@ -83,7 +80,8 @@ loginImagen = function(canvas) {
     .then(response => {
         console.log(response)
         try {
-            alert('bienvenido: ' + response.data.respuesta.FaceMatches[0].Face.ExternalImageId);
+            alert('Bienvenido: ' + response.data.respuesta.FaceMatches[0].Face.ExternalImageId + ' 😉');
+            window.location.href = "landing.html";
         } catch(error) {
             alert("Error usuario desconocido 😐");
         }
@@ -91,4 +89,39 @@ loginImagen = function(canvas) {
     .catch(error => {
         console.error(error);
     })
+}
+
+var imgBase64 = "";
+
+nuevoEstudiante = function() {
+    let idEstudiante = document.getElementById("inputId").value;
+    
+    if(idEstudiante != "" && imgBase64 != "") {
+        axios.post('http://localhost:3000/estudiante/registro', {
+            id: idEstudiante,
+            base64: imgBase64
+        })
+        .then(response => {
+            alert('Estudiante creado con éxito!');
+        })
+        .catch(err => {
+            console.log(err);
+        })
+    } else {
+        alert('Faltan datos...');
+    }
+}
+
+getImager64 = function() {
+    let inputImg = document.getElementById('inputFoto');
+
+    let file = inputImg.files[0];
+    reader = new FileReader();
+
+    reader.onloadend = function() {
+        imgBase64 = reader.result.split(",")[1];
+        //console.log(imgBase64);
+    }
+
+    reader.readAsDataURL(file);
 }
