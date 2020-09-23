@@ -4,7 +4,7 @@ login = function() {
     let user = document.getElementById("usuario").value;
     let password = document.getElementById("contrasenia").value;
 
-    axios.get('http://localhost:3000/sesion/login?id=' + user)
+    axios.get('http://18.188.16.201:3000/sesion/login?id=' + user)
         .then(response => {
             if(response.data.password === password) {
                 alert('Bienvenido: ' + response.data.id + ' 😉');
@@ -25,7 +25,7 @@ registro = function() {
     if(password1 === password2) {
         let user = document.getElementById("registroUsuario").value;
 
-        axios.post('http://localhost:3000/sesion/registro', {
+        axios.post('http://18.188.16.201:3000/sesion/registro', {
                 name: user,
                 password: password1,
                 base64: ""
@@ -54,7 +54,7 @@ desplegar = function() {
 
 
 registroImagen = function(canvas, user, password1) {
-    axios.post('http://localhost:3000/sesion/registro', {
+    axios.post('http://18.188.16.201:3000/sesion/registro', {
                 name: user,
                 password: password1,
                 base64: canvas
@@ -74,7 +74,7 @@ registroImagen = function(canvas, user, password1) {
 }
 
 loginImagen = function(canvas) {
-    axios.post('http://localhost:3000/sesion/loginface', {
+    axios.post('http://18.188.16.201:3000/sesion/loginface', {
         image: canvas
     })
     .then(response => {
@@ -97,7 +97,7 @@ nuevoEstudiante = function() {
     let idEstudiante = document.getElementById("inputId").value;
     
     if(idEstudiante != "" && imgBase64 != "") {
-        axios.post('http://localhost:3000/estudiante/registro', {
+        axios.post('http://18.188.16.201:3000/estudiante/registro', {
             id: idEstudiante,
             base64: imgBase64
         })
@@ -162,7 +162,7 @@ getImager64G = function() {
 let urlImg = "https://imagesemi1proc.s3.us-east-2.amazonaws.com/";
 
 getEstudiantes = function() {
-    axios.get('http://localhost:3000/estudiante/listado')
+    axios.get('http://18.188.16.201:3000/estudiante/listado')
         .then(res => {
             console.log(res.data.Items);
             
